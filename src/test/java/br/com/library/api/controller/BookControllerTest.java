@@ -1,6 +1,8 @@
 package br.com.library.api.controller;
 
+import br.com.library.api.dto.BookDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,20 +31,22 @@ public class BookControllerTest {
     @Test
     @DisplayName("Successfully create a book")
     void testCreateBook() throws Exception {
-        String json = new ObjectMapper().writeValueAsString(null);
+        BookDTO bookDTO = BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
+
+        String json = new ObjectMapper().writeValueAsString(bookDTO);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post(BOOK_API)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content("");
+                .content(json);
 
         mockMvc
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Clean Code"))
-                .andExpect(MockMvcResultMatchers.jsonPath("author").value("Robert Cecil Martin"))
-                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value("121321"));
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value(bookDTO.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("author").value(bookDTO.getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(bookDTO.getIsbn()));
     }
 }
