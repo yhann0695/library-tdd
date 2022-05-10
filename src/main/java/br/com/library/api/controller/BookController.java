@@ -21,8 +21,8 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookDTO create(@RequestBody BookDTO dto) {
-        Book entity = Book.builder().title(dto.getTitle()).author(dto.getAuthor()).isbn(dto.getIsbn()).build();
-        entity = bookService.save(entity);
-        return BookDTO.builder().id(entity.getId()).author(entity.getAuthor()).title(entity.getTitle()).isbn(entity.getIsbn()).build();
+        Book book = modelMapper.map(dto, Book.class);
+        book = bookService.save(book);
+        return modelMapper.map(book, BookDTO.class);
     }
 }
