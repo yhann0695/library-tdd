@@ -1,6 +1,7 @@
 package br.com.library.api.controller;
 
 import br.com.library.api.dto.BookDTO;
+import br.com.library.api.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +29,9 @@ public class BookControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    BookService bookService;
 
     @Test
     @DisplayName("Successfully create a book")
