@@ -1,6 +1,7 @@
 package br.com.library.api.controller;
 
 import br.com.library.api.dto.BookDTO;
+import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Successfully create a book")
     void testCreateBook() throws Exception {
-        BookDTO bookDTO = BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
+        BookDTO bookDTO = createNewBook();
 
         BDDMockito.given(bookService.save(Mockito.any(Book.class)))
                 .willReturn(Book.builder().id(1L).title("Clean Code").author("Robert Cecil Martin").isbn("121321").build());
@@ -77,5 +78,31 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(3)));
 
+    }
+
+    @Test
+    @DisplayName("the ISBN cannot be repeated")
+    void createBookWithDuplicatedIsbn() throws Exception {
+
+        BookDTO dto = createNewBook();
+        String json = new ObjectMapper().writeValueAsString(dto);
+        final String msgError = "ISBN already registered";
+        BDDMockito.given(bookService.save(Mockito.any(Book.class))).willThrow(new BusinessException(msgError));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(msgError));
+    }
+
+    private BookDTO createNewBook() {
+        return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
 }
