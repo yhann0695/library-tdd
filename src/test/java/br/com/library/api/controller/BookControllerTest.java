@@ -4,7 +4,7 @@ import br.com.library.api.dto.BookDTO;
 import br.com.library.api.model.Book;
 import br.com.library.api.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.aspectj.lang.annotation.Before;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,5 +59,23 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(bookDTO.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("author").value(bookDTO.getAuthor()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(bookDTO.getIsbn()));
+    }
+
+    @Test
+    @DisplayName("Throws error for insufficient data in book creation")
+    void testCreateInvalidBook() throws Exception {
+        String json = new ObjectMapper().writeValueAsString(new BookDTO());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(3)));
+
     }
 }
