@@ -1,6 +1,7 @@
 package br.com.library.api.service;
 
 import br.com.library.api.dto.BookDTO;
+import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.repository.BookRepository;
 import br.com.library.api.service.impl.BookServiceImpl;
@@ -33,7 +34,8 @@ public class BookServiceTest {
     @Test
     @DisplayName("Must save a book")
     void saveBookTest() {
-        Book book = Book.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
+        Book book = createNewValidBook();
+        Mockito.when(bookRepository.existsByIsbn(Mockito.anyString())).thenReturn(false);
 
         Mockito.when( bookRepository.save(book))
                 .thenReturn(Book.builder().id(1L).title("Clean Code").author("Robert Cecil Martin").isbn("121321").build());
@@ -44,7 +46,24 @@ public class BookServiceTest {
         assertThat(savedBook.getTitle()).isEqualTo("Clean Code");
         assertThat(savedBook.getAuthor()).isEqualTo("Robert Cecil Martin");
         assertThat(savedBook.getIsbn()).isEqualTo("121321");
+    }
 
+    @Test
+    @DisplayName("should throw an error when trying to save a book with duplicate ISBN")
+    void shouldNotSaveABookWithDuplicatedISBN() {
 
+        Book book = createNewValidBook();
+        Mockito.when(bookRepository.existsByIsbn(Mockito.anyString())).thenReturn(true);
+
+        Throwable exception = Assertions.catchThrowable(() -> bookService.save(book));
+        assertThat(exception).isInstanceOf(BusinessException.class)
+                .hasMessage("ISBN already registered");
+
+        Mockito.verify(bookRepository, Mockito.never()).save(book);
+
+    }
+
+    private Book createNewValidBook() {
+        return Book.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
 }

@@ -1,5 +1,6 @@
 package br.com.library.api.service.impl;
 
+import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.repository.BookRepository;
 import br.com.library.api.service.BookService;
@@ -16,6 +17,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book save(Book entity) {
+        if(bookRepository.existsByIsbn(entity.getIsbn())) {
+            throw new BusinessException("ISBN already registered");
+        }
         return bookRepository.save(entity);
     }
 }
