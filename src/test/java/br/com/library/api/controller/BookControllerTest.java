@@ -82,7 +82,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("the ISBN cannot be repeated")
-    void createBookWithDuplicatedIsbn() throws Exception {
+    void testCreateBookWithDuplicatedIsbn() throws Exception {
 
         BookDTO dto = createNewBook();
         String json = new ObjectMapper().writeValueAsString(dto);
@@ -101,6 +101,8 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(msgError));
     }
+
+
 
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
