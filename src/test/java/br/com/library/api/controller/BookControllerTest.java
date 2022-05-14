@@ -102,7 +102,11 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(msgError));
     }
 
+    @Test
+    @DisplayName("must get information from the book")
+    void testGetBookDetailsTest() {
 
+    }
 
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
