@@ -83,6 +83,17 @@ public class BookServiceTest {
         assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
     }
 
+    @Test
+    @DisplayName("should return empty if book ID does not exist")
+    void testBookNotFoundById() {
+        Long id = 1L;
+        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<Book> book = bookService.getById(id);
+
+        assertThat(book.isPresent()).isFalse();
+    }
+
     private Book createNewValidBook() {
         return Book.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
