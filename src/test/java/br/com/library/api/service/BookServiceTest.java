@@ -94,6 +94,20 @@ public class BookServiceTest {
         assertThat(book.isPresent()).isFalse();
     }
 
+    @Test
+    @DisplayName("must delete a book")
+    void testDeleteBook() {
+        Long id = 1L;
+
+        Book book = createNewValidBook();
+
+        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+
+        bookService.delete(book.getId());
+
+        assertThat(book.getId()).isNull();
+    }
+
     private Book createNewValidBook() {
         return Book.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
