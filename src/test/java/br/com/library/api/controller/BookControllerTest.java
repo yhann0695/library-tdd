@@ -131,6 +131,20 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(createNewBook().getIsbn()));
     }
 
+    @Test
+    @DisplayName("should return not found if the book ID does not exist.")
+    void testBookNotFound() throws Exception {
+        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
