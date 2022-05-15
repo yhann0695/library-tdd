@@ -180,8 +180,12 @@ public class BookControllerTest {
 
         String json = new ObjectMapper().writeValueAsString(createNewBook());
 
-        BDDMockito.given(bookService.getById(id))
-                .willReturn(Optional.of(Book.builder().id(1L).title("new title").author("new author").isbn("123").build()));
+        Book updatingBook = Book.builder().id(1L).title("new title").author("new author").isbn("123").build();
+
+        BDDMockito.given(bookService.getById(id)).willReturn(Optional.of(updatingBook));
+
+        Book updateBook = Book.builder().id(1L).title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
+        BDDMockito.given(bookService.update(updatingBook)).willReturn(updateBook);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                                                     .put(BOOK_API.concat("/" + id))
