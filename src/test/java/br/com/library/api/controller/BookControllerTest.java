@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("Test")
 @WebMvcTest
@@ -134,7 +136,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("should return not found if the book ID does not exist.")
     void testBookNotFound() throws Exception {
-        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+        BDDMockito.given(bookService.getById(anyLong())).willReturn(Optional.empty());
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get(BOOK_API.concat("/" + 1))
@@ -147,8 +149,15 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("must delete a book")
-    void testDeleteBook() {
+    void testDeleteBook() throws Exception {
+        BDDMockito.given(bookService.getById(anyLong())).willReturn(Optional.of(Book.builder().id(1L).build()));
 
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + 1));
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     private BookDTO createNewBook() {
