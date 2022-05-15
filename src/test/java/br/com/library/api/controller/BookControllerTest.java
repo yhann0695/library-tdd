@@ -160,6 +160,19 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
+    @Test
+    @DisplayName("should return not found when a book does not exist to delete")
+    void testDeleteNonExistentBook() throws Exception {
+        BDDMockito.given(bookService.getById(anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + 1));
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
