@@ -176,6 +176,30 @@ public class BookControllerTest {
     @Test
     @DisplayName("must update a book")
     void testUpdateBook() throws Exception {
+        Long id = 1L;
+
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+
+        BDDMockito.given(bookService.getById(id))
+                .willReturn(Optional.of(Book.builder().id(1L).title("new title").author("new author").isbn("123").build()));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                                                    .put(BOOK_API.concat("/" + id))
+                                                    .content(json)
+                                                    .accept(MediaType.APPLICATION_JSON)
+                                                    .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                    .andExpect(MockMvcResultMatchers.jsonPath("title").value(createNewBook().getTitle()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("author").value(createNewBook().getAuthor()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(createNewBook().getIsbn()));
+    }
+
+    @Test
+    @DisplayName("should return 404 when trying to update a book that doesn't exist")
+    void testUpdateNonExistentBook() throws Exception {
 
     }
 
