@@ -173,6 +173,12 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    @DisplayName("must update a book")
+    void testUpdateBook() throws Exception {
+
+    }
+
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
