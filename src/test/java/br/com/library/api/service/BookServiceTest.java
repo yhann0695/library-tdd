@@ -70,13 +70,13 @@ public class BookServiceTest {
     void testGetById() {
 
         Book book = createNewValidBook();
-        book.setId(returnId1());
-        Mockito.when(bookRepository.findById(returnId1())).thenReturn(Optional.of(book));
+        book.setId(id());
+        Mockito.when(bookRepository.findById(id())).thenReturn(Optional.of(book));
 
-        Optional<Book> foundBook = bookService.getById(returnId1());
+        Optional<Book> foundBook = bookService.getById(id());
 
         assertThat(foundBook).isPresent();
-        assertThat(foundBook.get().getId()).isEqualTo(returnId1());
+        assertThat(foundBook.get().getId()).isEqualTo(id());
         assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle());
         assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
         assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
@@ -85,9 +85,9 @@ public class BookServiceTest {
     @Test
     @DisplayName("should return empty if book ID does not exist")
     void testBookNotFoundById() {
-        Mockito.when(bookRepository.findById(returnId1())).thenReturn(Optional.empty());
+        Mockito.when(bookRepository.findById(id())).thenReturn(Optional.empty());
 
-        Optional<Book> book = bookService.getById(returnId1());
+        Optional<Book> book = bookService.getById(id());
 
         assertThat(book.isPresent()).isFalse();
     }
@@ -96,18 +96,27 @@ public class BookServiceTest {
     @DisplayName("must delete a book")
     void testDeleteBook() {
 
-        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.delete(returnId1()));
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.delete(id()));
 
-        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(returnId1());
+        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(id());
     }
 
     @Test
     @DisplayName("should return empty if book id does not exist")
     void testDeleteInvalidBook() {
-        Mockito.verify(bookRepository, Mockito.never()).deleteById(returnId1());
+        Mockito.verify(bookRepository, Mockito.never()).deleteById(id());
     }
 
-    private Long returnId1() {
+    @Test
+    @DisplayName("should return error if the book does not exist")
+    void testUpdateInvalidBook() {
+        Book book = createNewValidBook();
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> bookService.update(book));
+
+        Mockito.verify(bookRepository, Mockito.never()).save(book);
+    }
+
+    private Long id() {
         return 1L;
     }
 
