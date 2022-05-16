@@ -64,5 +64,16 @@ public class BookRepositoryTest {
         assertThat(foundBook).isPresent();
     }
 
+    @Test
+    @DisplayName("must save a book")
+    void testSaveBookRest() {
+        String isbn = "121321";
+        Book book = createNewBook(isbn);
+
+        Book savedBook = bookRepository.save(book);
+
+        assertThat(savedBook.getId()).isNotNull();
+    }
+
 
 }
