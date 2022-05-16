@@ -68,16 +68,15 @@ public class BookServiceTest {
     @Test
     @DisplayName("must get a book by ID")
     void testGetById() {
-        Long id = 1L;
 
         Book book = createNewValidBook();
-        book.setId(id);
-        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        book.setId(returnId1());
+        Mockito.when(bookRepository.findById(returnId1())).thenReturn(Optional.of(book));
 
-        Optional<Book> foundBook = bookService.getById(id);
+        Optional<Book> foundBook = bookService.getById(returnId1());
 
         assertThat(foundBook).isPresent();
-        assertThat(foundBook.get().getId()).isEqualTo(id);
+        assertThat(foundBook.get().getId()).isEqualTo(returnId1());
         assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle());
         assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
         assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
@@ -86,10 +85,9 @@ public class BookServiceTest {
     @Test
     @DisplayName("should return empty if book ID does not exist")
     void testBookNotFoundById() {
-        Long id = 1L;
-        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.empty());
+        Mockito.when(bookRepository.findById(returnId1())).thenReturn(Optional.empty());
 
-        Optional<Book> book = bookService.getById(id);
+        Optional<Book> book = bookService.getById(returnId1());
 
         assertThat(book.isPresent()).isFalse();
     }
@@ -97,15 +95,20 @@ public class BookServiceTest {
     @Test
     @DisplayName("must delete a book")
     void testDeleteBook() {
-        Long id = 1L;
 
-        Book book = createNewValidBook();
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.delete(returnId1()));
 
-        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(returnId1());
+    }
 
-        bookService.delete(book.getId());
+    @Test
+    @DisplayName("should return empty if book id does not exist")
+    void testDeleteInvalidBook() {
+        Mockito.verify(bookRepository, Mockito.never()).deleteById(returnId1());
+    }
 
-        assertThat(book.getId()).isNull();
+    private Long returnId1() {
+        return 1L;
     }
 
     private Book createNewValidBook() {
