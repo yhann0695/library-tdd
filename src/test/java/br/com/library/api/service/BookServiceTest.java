@@ -116,6 +116,23 @@ public class BookServiceTest {
         Mockito.verify(bookRepository, Mockito.never()).save(book);
     }
 
+    @Test
+    @DisplayName("must update a book")
+    void testUpdateBook() {
+        Book updatingBook = Book.builder().id(id()).build();
+
+        Book updatedBook = createNewValidBook();
+        updatedBook.setId(id());
+        Mockito.when(bookRepository.save(updatingBook)).thenReturn(updatedBook);
+
+        Book book = bookService.update(updatingBook);
+
+        assertThat(book.getId()).isEqualTo(updatedBook.getId());
+        assertThat(book.getTitle()).isEqualTo(updatedBook.getTitle());
+        assertThat(book.getAuthor()).isEqualTo(updatedBook.getAuthor());
+        assertThat(book.getIsbn()).isEqualTo(updatedBook.getIsbn());
+    }
+
     private Long id() {
         return 1L;
     }
