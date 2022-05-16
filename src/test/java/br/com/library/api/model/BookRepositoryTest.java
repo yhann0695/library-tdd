@@ -66,7 +66,7 @@ public class BookRepositoryTest {
 
     @Test
     @DisplayName("must save a book")
-    void testSaveBookRest() {
+    void testSaveBook() {
         String isbn = "121321";
         Book book = createNewBook(isbn);
 
