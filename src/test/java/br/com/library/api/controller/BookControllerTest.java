@@ -220,6 +220,13 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    @DisplayName("must filter book")
+    void testFindBook() {
+
+    }
+
+
     private BookDTO createNewBook() {
         return BookDTO.builder().title("Clean Code").author("Robert Cecil Martin").isbn("121321").build();
     }
