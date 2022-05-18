@@ -4,6 +4,8 @@ import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.repository.BookRepository;
 import br.com.library.api.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -44,5 +46,10 @@ public class BookServiceImpl implements BookService {
             throw new IllegalArgumentException("Book id cant be null");
         }
         return bookRepository.save(book);
+    }
+
+    @Override
+    public Page<Book> find(Book filter, Pageable pageRequest) {
+        return null;
     }
 }
