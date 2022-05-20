@@ -10,4 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class LoanDTO {
+
+    private String isbn;
+    private String customer;
 }
