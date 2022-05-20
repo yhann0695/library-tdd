@@ -7,6 +7,7 @@ import br.com.library.api.service.BookService;
 import br.com.library.api.service.LoanService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,8 +71,22 @@ public class LoanControllerTest {
 
     @Test
     @DisplayName("should return an error if you try to borrow a book that doesn't exist")
-    void testInvalidIsbnCreateLoan() {
+    void testInvalidIsbnCreateLoan() throws Exception {
+        LoanDTO dto = LoanDTO.builder().isbn("123321").customer("Jaozin").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
 
+        BDDMockito.given(bookService.getBookByIsbn(dto.getIsbn())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post(LOAN_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value("Book not found for passed ISBN"));
     }
 
 }
