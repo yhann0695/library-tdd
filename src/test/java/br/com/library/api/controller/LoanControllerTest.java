@@ -68,4 +68,10 @@ public class LoanControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("1"));
     }
 
+    @Test
+    @DisplayName("should return an error if you try to borrow a book that doesn't exist")
+    void testInvalidIsbnCreateLoan() {
+
+    }
+
 }
