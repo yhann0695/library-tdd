@@ -65,7 +65,7 @@ public class LoanControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("id").value(1L));
+                .andExpect(MockMvcResultMatchers.content().string("1"));
     }
 
 }
