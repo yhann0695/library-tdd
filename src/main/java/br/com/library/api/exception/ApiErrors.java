@@ -1,6 +1,7 @@
 package br.com.library.api.exception;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +20,13 @@ public class ApiErrors {
         this.errors = Arrays.asList(args.getMessage());
     }
 
+    public ApiErrors(ResponseStatusException args) {
+        this.errors = Arrays.asList(args.getReason());
+    }
+
     public List<String> getErrors() {
         return this.errors;
     }
+
+
 }
