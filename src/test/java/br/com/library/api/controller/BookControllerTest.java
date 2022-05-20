@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("Test")
-@WebMvcTest
+@WebMvcTest(controllers = {BookController.class})
 @AutoConfigureMockMvc
 public class BookControllerTest {
 
