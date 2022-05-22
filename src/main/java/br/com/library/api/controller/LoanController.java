@@ -1,6 +1,7 @@
 package br.com.library.api.controller;
 
 import br.com.library.api.dto.LoanDTO;
+import br.com.library.api.dto.ReturnedLoadDTO;
 import br.com.library.api.model.Book;
 import br.com.library.api.model.Loan;
 import br.com.library.api.service.BookService;
@@ -34,5 +35,14 @@ public class LoanController {
         Loan entity = Loan.builder().book(book).customer(dto.getCustomer()).loanDate(LocalDate.now()).build();
         entity = loanService.save(entity);
         return entity.getId();
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoadDTO dto) {
+        Loan loan = loanService.getById(id).get();
+        loan.setReturned(dto.getReturned());
+
+        loanService.update(loan);
     }
 }
