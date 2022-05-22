@@ -1,5 +1,6 @@
 package br.com.library.api.service.impl;
 
+import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Loan;
 import br.com.library.api.repository.LoanRepository;
 import br.com.library.api.service.LoanService;
@@ -16,6 +17,9 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Loan save(Loan loan) {
+        if(loanRepository.existsByBookAndNotReturned(loan.getBook())) {
+            throw new BusinessException("Book already loaned");
+        }
         return loanRepository.save(loan);
     }
 }
