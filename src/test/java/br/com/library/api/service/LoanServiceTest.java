@@ -1,10 +1,10 @@
 package br.com.library.api.service;
 
+import br.com.library.api.dto.LoanFilterDTO;
 import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.model.Loan;
 import br.com.library.api.repository.LoanRepository;
-import br.com.library.api.service.impl.BookServiceImpl;
 import br.com.library.api.service.impl.LoanServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,7 +103,7 @@ public class LoanServiceTest {
 
         Optional<Loan> result = loanService.getById(id);
 
-        assertThat(result.isPresent()).isTrue();
+        assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(id);
         assertThat(result.get().getCustomer()).isEqualTo(loan.getCustomer());
         assertThat(result.get().getBook()).isEqualTo(loan.getBook());
@@ -124,7 +129,33 @@ public class LoanServiceTest {
         Mockito.verify(loanRepository).save(loan);
     }
 
-    public Loan createLoan() {
+    @Test
+    @DisplayName("must filter loan by properties")
+    void testFindLoan() {
+        LoanFilterDTO loanFilterDTO = LoanFilterDTO.builder().isbn("123").customer("Joãozin").build();
+        // scenery
+        Long id = 1L;
+        Loan loan = createLoan();
+        loan.setId(id);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Loan> loanList = Collections.singletonList(loan);
+
+        Page<Loan> page = new PageImpl<>(loanList, pageRequest, loanList.size());
+        Mockito.when(loanRepository
+                .findByBookIsbnOrCustomer(Mockito.anyString(), Mockito.anyString(), Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        // execution
+        Page<Loan> result  = loanService.find(loanFilterDTO, pageRequest);
+
+        // verification
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).isEqualTo(loanList);
+        assertThat(result.getPageable().getPageNumber()).isZero();
+        assertThat(result.getPageable().getPageSize()).isEqualTo(10);
+    }
+
+    public static Loan createLoan() {
         Book book = Book.builder().id(1L).build();
         String costumer = "Joaozin";
 
