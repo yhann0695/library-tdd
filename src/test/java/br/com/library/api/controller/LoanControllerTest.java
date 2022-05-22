@@ -7,7 +7,6 @@ import br.com.library.api.model.Book;
 import br.com.library.api.model.Loan;
 import br.com.library.api.service.BookService;
 import br.com.library.api.service.LoanService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -134,5 +133,20 @@ public class LoanControllerTest {
 
         // check if the function was called
         Mockito.verify(loanService, Mockito.times(1)).update(loan);
+    }
+
+    @Test
+    @DisplayName("should return a 404 when trying to return a non-existent book")
+    void testReturnNonexistentBook() throws Exception {
+        ReturnedLoadDTO dto = ReturnedLoadDTO.builder().returned(true).build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        mockMvc.perform(patch(LOAN_API.concat("/1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
