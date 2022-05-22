@@ -1,6 +1,7 @@
 package br.com.library.api.controller;
 
 import br.com.library.api.dto.LoanDTO;
+import br.com.library.api.dto.ReturnedLoadDTO;
 import br.com.library.api.exception.BusinessException;
 import br.com.library.api.model.Book;
 import br.com.library.api.model.Loan;
@@ -28,6 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 import java.util.Optional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("Test")
@@ -114,4 +117,22 @@ public class LoanControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value("Book already loaned"));
     }
 
+    @Test
+    @DisplayName("must return a book")
+    void testReturnBook() throws Exception {
+        ReturnedLoadDTO dto = ReturnedLoadDTO.builder().returned(true).build();
+        Loan loan = Loan.builder().id(1L).build();
+        BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(Optional.of(loan));
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mockMvc.perform(patch(LOAN_API.concat("/1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+
+        // check if the function was called
+        Mockito.verify(loanService, Mockito.times(1)).update(loan);
+    }
 }
