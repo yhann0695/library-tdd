@@ -3,6 +3,7 @@ package br.com.library.api.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +26,7 @@ public class Book {
 
     @Column(name = "BOOK_ISBN")
     private String isbn;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    List<Loan> loans;
 }
